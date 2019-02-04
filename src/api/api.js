@@ -22,7 +22,7 @@ export const requestLogin = ( { username, password } ) => {
 
 export const getAllCourse = async ( pages ) => {
     return new Promise( ( resolve, reject ) => {
-      const res = getWithToken( '/ctfplatform/course/v1/courses', {
+      const res = getWithToken( '/ctf/course/v1/courses', {
         pages
       } )
       console.log(res)
