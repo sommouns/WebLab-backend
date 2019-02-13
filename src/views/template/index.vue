@@ -1,11 +1,13 @@
 <template>
-    <div class="course_list">
+    <div class="template_list">
         
         <div class="header">
             <div class="search">    
-                <el-input class="search_input" v-model="search_id" placeholder="请输入课程id搜索" ></el-input><el-button type="primary" @click="search"><i class="el-icon-search"></i> 搜索</el-button>
+                <el-input class="search_input" v-model="search_id" placeholder="请输入学生id搜索" ></el-input><el-button type="primary" @click="search"><i class="el-icon-search"></i> 搜索</el-button>
             </div>
-            
+            <div class="add">
+                <el-button type="danger" @click="()=>{this.$router.push('/add_template')}"><i class="el-icon-plus"></i> 添加学生</el-button>
+            </div>
         </div>
         <div style="clear:both"></div>
         <div class="find_res" v-if="findShow">
@@ -13,88 +15,82 @@
                 <div slot="header" class="clearfix">
                     <strong>查询结果</strong>
                 </div>
-                <div v-loading="loading2" class="clearfix">
+                <!-- <div v-loading="loading2" class="clearfix">
                     <img :src="findRes.img" alt="" class="find_img">
                     <div class="find_info">
-                        <div>课程名称：{{findRes.cname}}</div>
-                        <div>教师：{{findRes.teacher.tname}}</div>
-                        <div>参加人数：{{findRes.count}}</div>
-                        <div>课程id：{{findRes.id}}</div>
-                        <div>课程创建时间：{{findRes.createdtime}}</div>
+                        <div>姓名：{{findRes.realname}}</div>
+                        <div>id：{{findRes.id}}</div>
+                        <div>注册时间：{{findRes.jointime}}</div>
+                        <div>班级：{{findRes.classname}}</div>
+                        <div>学校：{{findRes.college}}</div>
+                        <div>学号：{{findRes.number}}</div>
+                        <div>地址：{{findRes.location}}</div>
                         <br>
-                        <el-button @click="handleFind(findRes)">查看详情</el-button>
-                        <el-button type="danger" @click="deleteCourse(findRes)">删除课程</el-button>
+                        <el-button>查看详情</el-button>
+                        <el-button type="danger" @click="deletetemplate(findRes)">删除学生</el-button>
                     </div>
                     <div class="find_desc">
-                        <h3>课程简介</h3>
-                        {{findRes.cdescribe}}
+                        <h3>个性签名</h3>
+                        {{findRes.tdescribe}}
                     </div>
-                </div>
+                </div> -->
             </el-card>
         </div>
         <el-table
-            :data="courseList"
+            :data="templateList"
             border
             style="width: 100%"
             v-loading="loading">
             <el-table-column
             prop="id"
-            label="课程id"
-            width="80"
+            label="id"
+            width="60"
             >
             </el-table-column>
             <el-table-column
             prop="cname"
-            label="课程名称"
+            label="名称"
            >
             </el-table-column> 
             <el-table-column
-            prop="teacher.tname"
-            label="教师"
+            prop="createdby"
+            label="创建者"
             >
             </el-table-column>          
             <el-table-column
-            prop="createdtime"
+            prop="createtime"
             label="创建时间"
             >
             </el-table-column>
-            <el-table-column
-            prop="count"
-            label="报名人数"
-            >
-            </el-table-column>
-            <el-table-column
-            prop="teacher.email"
-            label="教师邮箱"
-            >
-            </el-table-column>
+            
             <el-table-column
             label="操作"
+            width="120"
             >
                 <template slot-scope="scope">
                     <el-button @click="handleFind(scope.row)" type="text" size="small">查看</el-button>
-                    <el-button @click="deleteCourse(scope.row)" type="text" size="small"><span style="color:red">删除</span></el-button>
+                    <el-button @click="deletetemplate(scope.row)" type="text" size="small"><span style="color:red">删除</span></el-button>
                 </template>
             </el-table-column>
         </el-table>
         <div class="block">
             <el-pagination
                 layout="prev, pager, next"
-                :total="totalPage">
+                :total="totalPage"
+                @current-change="changePage"
+                :current-page.sync="currentPage">
             </el-pagination>
         </div>
-        
-
     </div>
 </template>
 
 <script>
 
 import {
-    getAllCourse_api,
-    deleteMyCourse_api,
-    searchCourse_api,
-    addCourse_api
+    getAllTemplate_api,
+    searchTemplate_api,
+    deleteMyTemplate_api,
+    // addtemplate_api
 } from '@/api/api.js'
 import {
     formatSeconds
@@ -104,9 +100,10 @@ import { create } from 'domain';
 export default {
     async created() {
         const pages = 1
-        const res = await getAllCourse_api(pages)
+        const res = await getAllTemplate_api(pages)
+        console.log(res)
         if (res.status === 200) {
-            this.courseList = res.data.data.pageResult
+            this.templateList = res.data.data.pageResult
             this.totalPage = res.data.data.totalPages * 10
             this.loading = false
         }else {
@@ -115,20 +112,30 @@ export default {
     },
     data() {
         return {
-            courseList: [],
+            templateList: [],
             loading:true,
             loading2:true,
             search_id:'',
             findShow:false,
             findRes:{},
+            currentPage:1,
             totalPage:10,
         }
     },
     methods: {
       handleFind(row) {
-        this.detail = row
-        this.$router.push({path:`/course_detail`,query:{detail:this.detail}})
+        console.log(row);
       },
+            async changePage(e) {
+                const res = await getAllTemplate_api(e)
+                if (res.status === 200) {
+                    this.templateList = res.data.data.pageResult
+                    this.totalPage = res.data.data.totalPages * 10
+                    this.loading = false
+                }else {
+                    this.$message.error('网络请求失败');
+                }
+            },
       async search(){
           this.findShow = true
           if(isNaN(Number(this.search_id)) || this.search_id === '') {
@@ -139,7 +146,7 @@ export default {
               this.search_id = ''
               return
           }
-          const res = await searchCourse_api(this.search_id)  
+          const res = await searchTemplate_api(this.search_id)  
           if(!res.data.meta.success){
                 this.$message({
                     message:res.data.meta.message,
@@ -158,29 +165,30 @@ export default {
                 }
                 return
           }
-          this.findRes = res.data.data.courseinfo
+          this.findRes = res.data.data.templateinfo
           this.loading2 = false
       },
-      deleteCourse(row) {
+      deletetemplate(row) {
         this.$confirm('此操作将永久删除该课程, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'error'
         }).then(async () => {
-            const res = await deleteMyCourse_api(row.id)
+            const res = await deleteMyTemplate_api(row.id)
             console.log(res)
             if (res.status === 200) {
                  this.$message({
                     type: 'success',
                     message: '删除成功!'
                 });
-                const res2 = await getAllCourse_api(1)
+                const res2 = await getAllTemplate_api(1)
                 console.log(res2)
                
                 this.loading = true
                 this.findShow = false
                 this.findRes = {}
-                this.courseList = res2.data.data.pageResult
+                this.currentPage = 1   
+                this.templateList = res2.data.data.pageResult
                 this.loading = false 
             }
         }).catch(() => {
@@ -190,16 +198,13 @@ export default {
             });          
         });
       },
-      addCourse(){
-          this.$router.push('/add_course')
-      }
     },
 }
 </script>
 
 
 <style lang="less">
-    .course_list{
+    .template_list{
         .header {
             .search{
                 float: left;
@@ -221,13 +226,13 @@ export default {
         }
         .find_img{
             float: left;
-            height: 12rem;
-            width: 27%
+            height: 16rem;
+            width: 25%
         }
         .find_info{
             float: left;
             margin-left: 2rem;
-            width: 18%
+            width: 22%
         }
         .find_info div{
             line-height: 2em;
@@ -235,7 +240,7 @@ export default {
         .find_desc{
             float: left;
             margin-left: 2rem;
-            width: 47%;
+            width: 43%;
         }
     }
     .text {

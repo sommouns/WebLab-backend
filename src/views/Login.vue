@@ -17,7 +17,7 @@
 
 <script>
   import axios from 'axios'
-  import { requestLogin } from '../api/api';
+  import { requestLogin, requestLogin_api } from '../api/api';
   //import NProgress from 'nprogress'
   export default {
     data() {
@@ -51,20 +51,27 @@
             //NProgress.start();
             var loginParams = { username: this.ruleForm2.username, password: this.ruleForm2.password };
     
-            requestLogin(loginParams).then(res => {
+            requestLogin_api(loginParams).then(res => {
               this.logining = false;
               let { status } = res;
-              if (status !== 200) {
-                this.$message({
+              if(res.status === 200) {
+                if(!res.data.meta.success) {
+                  this.$message({
+                    message: res.data.meta.message,
+                    type: 'error'
+                  });
+                }else{
+                  sessionStorage.setItem('token', res.data.data.token)
+                  _this.$router.push('/');
+                }
+              }
+              
+            }).catch(err => {
+              console.log()
+              this.$message({
                   message: "登录失败",
                   type: 'error'
                 });
-              }else {
-                localStorage.setItem('token', res.data.data.token)
-                _this.$router.push('/');
-                console.log(1)
-              }
-              console.log(res)
             })
 
           } else {

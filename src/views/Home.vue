@@ -2,7 +2,8 @@
 	<el-row class="container">
 		<el-col :span="24" class="header">
 			<el-col :span="10" class="logo" :class="collapsed?'logo-collapse-width':'logo-width'">
-				{{collapsed?'':sysName}}
+				<img src="../assets/logo.png" alt="" style="width:200px;margin:0">
+
 			</el-col>
 			<el-col :span="10">
 				<!-- <div class="tools" @click.prevent="collapse">
@@ -11,7 +12,7 @@
 			</el-col>
 			<el-col :span="4" class="userinfo">
 				<el-dropdown trigger="hover">
-					<span class="el-dropdown-link userinfo-inner"><img :src="this.sysUserAvatar" /> {{sysUserName}}</span>
+					<span class="el-dropdown-link userinfo-inner"><img src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=4000280700,2437437807&fm=27&gp=0.jpg" /> {{sysUserName}}</span>
 					<el-dropdown-menu slot="dropdown">
 						<!-- <el-dropdown-item>我的消息</el-dropdown-item> -->
 						<el-dropdown-item>设置</el-dropdown-item>
@@ -57,6 +58,9 @@
 </template>
 
 <script>
+	import {
+		logout_api
+	} from '@/api/api.js'
 	export default {
 		created(){
 			console.log(this.$router.options.routes)
@@ -96,13 +100,12 @@
 				var _this = this;
 				this.$confirm('确认退出吗?', '提示', {
 					//type: 'warning'
-				}).then(() => {
-					sessionStorage.removeItem('user');
+				}).then(async () => {
+					const res = await logout_api()
 					_this.$router.push('/login');
 				}).catch(() => {
 
 				});
-
 
 			},
 			//折叠导航栏
@@ -159,7 +162,7 @@
 				//width:230px;
 				height:60px;
 				font-size: 22px;
-				padding-left:20px;
+				padding-left:12px;
 				padding-right:20px;
 				border-color: rgba(238,241,146,0.3);
 				border-right-width: 1px;

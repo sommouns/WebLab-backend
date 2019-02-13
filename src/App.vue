@@ -27,7 +27,9 @@ body {
 	font-size: 14px;
 	-webkit-font-smoothing: antialiased;
 }
-
+.el-loading-mask{
+	z-index: 2 !important;
+}
 #app {
 	position: absolute;
 	top: 0px;
@@ -63,5 +65,9 @@ body {
 .fade-enter,
 .fade-leave-active {
 	opacity: 0;
+}
+.el-pagination{
+	text-align: center;
+	margin-top: 1rem;
 }
 </style>
