@@ -276,7 +276,7 @@
   }
 </script>
 
-<style lang="less">
+<style lang="scss">
 .search_input{
     width: 12rem;
     margin-right: 1rem;

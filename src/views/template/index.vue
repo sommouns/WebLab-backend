@@ -203,7 +203,7 @@ export default {
 </script>
 
 
-<style lang="less">
+<style lang="scss">
     .template_list{
         .header {
             .search{

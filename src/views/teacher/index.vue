@@ -213,7 +213,7 @@ export default {
 </script>
 
 
-<style lang="less">
+<style lang="scss">
     .teacher_list{
         .header {
             .search{
